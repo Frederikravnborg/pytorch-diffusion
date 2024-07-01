@@ -103,12 +103,12 @@ class DiffusionModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss = self.get_loss(batch, batch_idx)
-        self.log("train/loss", loss)
+        self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss = self.get_loss(batch, batch_idx)
-        self.log("val/loss", loss)
+        self.log("val_loss", loss)
 
         # Generate and log images
         with torch.no_grad():

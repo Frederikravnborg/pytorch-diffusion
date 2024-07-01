@@ -63,9 +63,9 @@ def main():
 
 
     checkpoint_callback = ModelCheckpoint(
-        monitor='train/loss',
-        dirpath = f'checkpoints/{time.strftime("%m/%d-%H.%M.%S")}',
-        filename = f'{diffusion_steps}_steps-' + '{epoch:02d}-{loss:.2f}',
+        monitor='train_loss',
+        dirpath = f'checkpoints/{time.strftime("%d.%m-%H.%M.%S")}',
+        filename = f'{diffusion_steps}_steps-' + '{epoch:02d}-{train_loss:.2f}',
         save_top_k=3,
         mode='min',
     )
