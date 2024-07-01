@@ -187,7 +187,7 @@ class DiffusionModel(pl.LightningModule):
             plt.figure()
             plt.imshow(img)
             plt.axis('off')
-            self.logger.experiment.log({f"{prefix}/epoch_{epoch_idx}_image_{i}": [wandb.Image(plt, caption=f"{prefix}_epoch_{epoch_idx}_image_{i}")]})
+            self.logger.experiment.log({f"{prefix}/_image_{i}": [wandb.Image(plt, caption=f"{prefix}_image_{i}")]})
             plt.close()
 
 

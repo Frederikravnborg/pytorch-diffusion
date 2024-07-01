@@ -15,7 +15,7 @@ import numpy as np
 
 
 # Training hyperparameters
-mode = 0   # 0 for local, 1 for HPC
+mode = 1   # 0 for local, 1 for HPC
 
 if mode == 1: # HPC
     diffusion_steps = 100
@@ -25,20 +25,21 @@ if mode == 1: # HPC
     train_fraction = 1.
     val_fraction = 1.
     continue_training = False
-    ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'    
+    ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
+    wandb_name = f'{diffusion_steps}_steps'  
 
 if mode == 0: # Local
     diffusion_steps = 10
     dataset_choice = "CIFAR"
-    max_epoch = 1
+    max_epoch = 10
     batch_size = 128
     train_fraction = 2
     val_fraction = 2
     continue_training = False
     ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
+    wandb_name = f'local_{diffusion_steps}_steps'
 
 
-wandb_name = f'{diffusion_steps}_steps'
 
 # Set the device
 if torch.cuda.is_available():
