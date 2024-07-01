@@ -6,47 +6,64 @@ from model import DiffusionModel
 from torch.utils.data import DataLoader
 import imageio
 import glob
-import wandb
 import time
-import warnings
+import wandb
+from pytorch_fid.inception import InceptionV3
+from scipy.stats import entropy
+import torch.nn.functional as F
+import numpy as np
 
 
-def main():
-    # Training hyperparameters
+# Training hyperparameters
+mode = 0   # 0 for local, 1 for HPC
+
+if mode == 1: # HPC
+    diffusion_steps = 100
+    dataset_choice = "CIFAR"
+    max_epoch = 1000
+    batch_size = 128
+    train_fraction = 1.
+    val_fraction = 1.
+    continue_training = False
+    ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'    
+
+if mode == 0: # Local
     diffusion_steps = 10
     dataset_choice = "CIFAR"
     max_epoch = 1
     batch_size = 128
-
     train_fraction = 2
     val_fraction = 2
-
     continue_training = False
     ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
 
-    wandb_name = f'{diffusion_steps}_steps'
 
-    # Set the device
-    if torch.cuda.is_available():
-        device = 'cuda'
-    elif torch.backends.mps.is_available():
-        device = 'mps'
-    else:
-        device = 'cpu'
+wandb_name = f'{diffusion_steps}_steps'
 
-    # Loading parameters
-    load_model = False
-    load_version_num = 1
+# Set the device
+if torch.cuda.is_available():
+    device = 'cuda'
+elif torch.backends.mps.is_available():
+    device = 'mps'
+else:
+    device = 'cpu'
 
-    # Code for optionally loading model
-    pass_version = None
-    last_checkpoint = None
 
-    if load_model:
-        pass_version = load_version_num
-        last_checkpoint = glob.glob(
-            f"./lightning_logs/{dataset_choice}/version_{load_version_num}/checkpoints/*.ckpt"
-        )[-1]
+def main():
+
+    # # Loading parameters
+    # load_model = False
+    # load_version_num = 1
+
+    # # Code for optionally loading model
+    # pass_version = None
+    # last_checkpoint = None
+
+    # if load_model:
+    #     pass_version = load_version_num
+    #     last_checkpoint = glob.glob(
+    #         f"./lightning_logs/{dataset_choice}/version_{load_version_num}/checkpoints/*.ckpt"
+    #     )[-1]
 
     # Create datasets and data loaders
     train_dataset = DiffSet(True, dataset_choice)
@@ -72,14 +89,13 @@ def main():
 
     wandb_logger = pl.loggers.WandbLogger(
         name=f'{time.strftime("%m/%d-%H.%M.%S")} - {wandb_name}',
-        version=pass_version,
         project="Diffusion_Project",
         log_model=True,
     )
 
     trainer = pl.Trainer(
         max_epochs=max_epoch, 
-        log_every_n_steps=10, 
+        log_every_n_steps=1, 
         callbacks=[checkpoint_callback],
         logger=wandb_logger,
         limit_train_batches=train_fraction,

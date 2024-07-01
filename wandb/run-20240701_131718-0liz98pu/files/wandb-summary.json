@@ -1,0 +1,1 @@
+{"_timestamp": 1719832657.358369, "_runtime": 19.000155210494995, "_step": 10, "inception_score": 1.0780220348750815, "inception_score_std": 0.009358592347564084, "train_loss": 1.4124698638916016, "epoch": 0, "trainer/global_step": 1, "val_loss": 1.1525976657867432, "_wandb": {"runtime": 21}}

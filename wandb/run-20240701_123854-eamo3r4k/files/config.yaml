@@ -1,0 +1,123 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.6
+    cli_version: 0.17.3
+    framework: lightning
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1719830334
+    t:
+      1:
+      - 1
+      - 9
+      - 41
+      - 55
+      - 103
+      2:
+      - 1
+      - 9
+      - 41
+      - 55
+      - 103
+      3:
+      - 7
+      - 13
+      - 23
+      - 66
+      4: 3.9.6
+      5: 0.17.3
+      8:
+      - 4
+      - 5
+      13: darwin-arm64
+    m:
+    - 1: trainer/global_step
+      6:
+      - 3
+    - 1: generated/image_0_0._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_0.captions
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_64.captions
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/image_0_127.captions
+      5: 1
+      6:
+      - 1

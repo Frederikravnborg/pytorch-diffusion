@@ -5,6 +5,13 @@ import pytorch_lightning as pl
 import math
 from modules import *
 import matplotlib.pyplot as plt
+import numpy as np
+from torch.utils.data import DataLoader
+from pytorch_fid.inception import InceptionV3
+from scipy.stats import entropy
+import torch.nn.functional as F
+import wandb
+
 
 class DiffusionModel(pl.LightningModule):
     def __init__(self, in_size, t_range, img_depth):
@@ -27,6 +34,12 @@ class DiffusionModel(pl.LightningModule):
         self.sa1 = SAWrapper(256, 8)
         self.sa2 = SAWrapper(256, 4)
         self.sa3 = SAWrapper(128, 8)
+
+        # Use the pool3 layer of InceptionV3 for feature extraction
+        self.inception_model = InceptionV3([InceptionV3.BLOCK_INDEX_BY_DIM[2048]]).to(self.device)
+        self.inception_model.eval()
+        self.generated_images = []
+
 
     def pos_encoding(self, t, channels, embed_size):
         inv_freq = 1.0 / (
@@ -85,21 +98,24 @@ class DiffusionModel(pl.LightningModule):
         )
         return loss
 
+
     def denoise_sample(self, x, t):
         """
         Corresponds to the inner loop of Algorithm 2 from (Ho et al., 2020).
         """
         with torch.no_grad():
-            if t > 1:
-                z = torch.randn(x.shape, device=x.device)
-            else:
-                z = torch.zeros(x.shape, device=x.device)
-            e_hat = self.forward(x, t.view(1, 1).repeat(x.shape[0], 1).to(x.device))
-            pre_scale = 1 / math.sqrt(self.alpha(t))
-            e_scale = (1 - self.alpha(t)) / math.sqrt(1 - self.alpha_bar(t))
-            post_sigma = math.sqrt(self.beta(t)) * z
-            x = pre_scale * (x - e_scale * e_hat) + post_sigma
+            for i in range(t, 0, -1):
+                e_hat = self.forward(x, torch.tensor([i], device=x.device, dtype=torch.float32).view(1, 1).repeat(x.shape[0], 1))
+                if i > 1:
+                    z = torch.randn(x.shape, device=x.device)
+                else:
+                    z = torch.zeros(x.shape, device=x.device)
+                pre_scale = 1 / math.sqrt(self.alpha(i))
+                e_scale = (1 - self.alpha(i)) / math.sqrt(1 - self.alpha_bar(i))
+                post_sigma = math.sqrt(self.beta(i)) * z
+                x = pre_scale * (x - e_scale * e_hat) + post_sigma
             return x
+
 
     def training_step(self, batch, batch_idx):
         loss = self.get_loss(batch, batch_idx)
@@ -113,15 +129,53 @@ class DiffusionModel(pl.LightningModule):
         # Generate and log images
         with torch.no_grad():
             generated_images = self.denoise_sample(batch.to(self.device), torch.tensor([self.t_range - 1], device=self.device))
-            self.log_images(generated_images, batch_idx)
+            self.generated_images.append(generated_images)
 
         return loss
+    
+    def on_validation_epoch_end(self):
+        # Generate noise
+        noise = torch.randn((32, 3, 32, 32), device=self.device)  # Adjust dimensions according to your dataset
+        generated_images = self.denoise_sample(noise, self.t_range)
+        
+        # Log generated images
+        self.log_images(generated_images, self.current_epoch)
+        
+        # Calculate and log Inception Score
+        inception_score, inception_std = self.calculate_inception_score(generated_images)
+        wandb.log({'inception_score': inception_score, 'inception_score_std': inception_std})
 
-    def log_images(self, images, batch_idx, prefix="generated"):
-        # Log images only for every 100th batch
-        if batch_idx % 100 != 0:
-            return
 
+    def calculate_inception_score(self, images, splits=10):
+        N = len(images)
+        assert N > 0
+        dataloader = DataLoader(images, batch_size=32)
+
+        preds = np.zeros((N, 2048))  # Changed to match the feature dimension
+
+        for i, batch in enumerate(dataloader, 0):
+            batch = batch.to(self.device)
+            with torch.no_grad():
+                pred = self.inception_model(batch)[0]
+            pred = pred.squeeze(-1).squeeze(-1)  # Squeeze to remove dimensions (1, 1)
+            preds[i * 32: i * 32 + pred.size(0)] = pred.cpu().numpy()
+
+        # Calculate Inception Score
+        split_scores = []
+
+        for k in range(splits):
+            part = preds[k * (N // splits): (k + 1) * (N // splits), :]
+            py = np.mean(part, axis=0)
+            scores = []
+            for i in range(part.shape[0]):
+                pyx = part[i, :]
+                scores.append(entropy(pyx, py))
+            split_scores.append(np.exp(np.mean(scores)))
+
+        return np.mean(split_scores), np.std(split_scores)
+
+
+    def log_images(self, images, epoch_idx, prefix="generated"):
         images = (images - images.min()) / (images.max() - images.min())
         images = images.permute(0, 2, 3, 1).cpu().numpy()
         
@@ -133,11 +187,12 @@ class DiffusionModel(pl.LightningModule):
             plt.figure()
             plt.imshow(img)
             plt.axis('off')
-            self.logger.experiment.log({f"{prefix}/image_{batch_idx}_{i}": [wandb.Image(plt, caption=f"{prefix}_image_{batch_idx}_{i}")]})
+            self.logger.experiment.log({f"{prefix}/epoch_{epoch_idx}_image_{i}": [wandb.Image(plt, caption=f"{prefix}_epoch_{epoch_idx}_image_{i}")]})
             plt.close()
 
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=2e-4)
         return optimizer
+
 
