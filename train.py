@@ -9,9 +9,7 @@ import glob
 import wandb
 import time
 import warnings
-from urllib3.exceptions import NotOpenSSLWarning
-# Ignore NotOpenSSLWarning warnings from urllib3
-warnings.filterwarnings("ignore", category=NotOpenSSLWarning)
+
 
 def main():
     # Training hyperparameters
