@@ -1,0 +1,48 @@
+{
+    "os": "macOS-15.0-arm64-arm-64bit",
+    "python": "3.9.6",
+    "heartbeatAt": "2024-06-29T15:18:56.370701",
+    "startedAt": "2024-06-29T15:18:55.212807",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/Frederikravnborg/pytorch-diffusion.git",
+        "commit": "22ab5fe828b7d3a0df854febb8372f7d94f8778c"
+    },
+    "email": "frederik@ravnborg.fr",
+    "root": "/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion",
+    "host": "FredMac.local",
+    "username": "fredmac",
+    "executable": "/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/.venv/bin/python",
+    "cpu_count": 10,
+    "cpu_count_logical": 10,
+    "cpu_freq": {
+        "current": 3504,
+        "min": 702,
+        "max": 3504
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3504,
+            "min": 702,
+            "max": 3504
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 460.4317207336426,
+            "used": 10.496021270751953
+        }
+    },
+    "gpuapple": {
+        "type": "Apple M2 Pro",
+        "vendor": "sppci_vendor_Apple"
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

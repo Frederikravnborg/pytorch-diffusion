@@ -1,9 +1,10 @@
+import wandb
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 import math
 from modules import *
-
+import matplotlib.pyplot as plt
 
 class DiffusionModel(pl.LightningModule):
     def __init__(self, in_size, t_range, img_depth):
@@ -90,10 +91,10 @@ class DiffusionModel(pl.LightningModule):
         """
         with torch.no_grad():
             if t > 1:
-                z = torch.randn(x.shape)
+                z = torch.randn(x.shape, device=x.device)
             else:
-                z = 0
-            e_hat = self.forward(x, t.view(1, 1).repeat(x.shape[0], 1))
+                z = torch.zeros(x.shape, device=x.device)
+            e_hat = self.forward(x, t.view(1, 1).repeat(x.shape[0], 1).to(x.device))
             pre_scale = 1 / math.sqrt(self.alpha(t))
             e_scale = (1 - self.alpha(t)) / math.sqrt(1 - self.alpha_bar(t))
             post_sigma = math.sqrt(self.beta(t)) * z
@@ -108,8 +109,35 @@ class DiffusionModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         loss = self.get_loss(batch, batch_idx)
         self.log("val/loss", loss)
-        return
+
+        # Generate and log images
+        with torch.no_grad():
+            generated_images = self.denoise_sample(batch.to(self.device), torch.tensor([self.t_range - 1], device=self.device))
+            self.log_images(generated_images, batch_idx)
+
+        return loss
+
+    def log_images(self, images, batch_idx, prefix="generated"):
+        # Log images only for every 100th batch
+        if batch_idx % 100 != 0:
+            return
+
+        images = (images - images.min()) / (images.max() - images.min())
+        images = images.permute(0, 2, 3, 1).cpu().numpy()
+        
+        # Select indices for images to log: first, middle, and last
+        indices_to_log = [0, len(images) // 2, len(images) - 1]
+        
+        for i in indices_to_log:
+            img = images[i]
+            plt.figure()
+            plt.imshow(img)
+            plt.axis('off')
+            self.logger.experiment.log({f"{prefix}/image_{batch_idx}_{i}": [wandb.Image(plt, caption=f"{prefix}_image_{batch_idx}_{i}")]})
+            plt.close()
+
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=2e-4)
         return optimizer
+
