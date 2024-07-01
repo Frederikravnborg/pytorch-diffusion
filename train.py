@@ -29,12 +29,12 @@ if mode == 1: # HPC
     wandb_name = f'{diffusion_steps}_steps'  
 
 if mode == 0: # Local
-    diffusion_steps = 10
+    diffusion_steps = 4
     dataset_choice = "CIFAR"
-    max_epoch = 10
+    max_epoch = 100
     batch_size = 128
-    train_fraction = 2
-    val_fraction = 2
+    train_fraction = 1
+    val_fraction = 1
     continue_training = False
     ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
     wandb_name = f'local_{diffusion_steps}_steps'

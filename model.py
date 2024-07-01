@@ -125,25 +125,20 @@ class DiffusionModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         loss = self.get_loss(batch, batch_idx)
         self.log("val_loss", loss)
-
-        # Generate and log images
-        with torch.no_grad():
-            generated_images = self.denoise_sample(batch.to(self.device), torch.tensor([self.t_range - 1], device=self.device))
-            self.generated_images.append(generated_images)
-
         return loss
     
     def on_validation_epoch_end(self):
-        # Generate noise
-        noise = torch.randn((32, 3, 32, 32), device=self.device)  # Adjust dimensions according to your dataset
-        generated_images = self.denoise_sample(noise, self.t_range)
-        
-        # Log generated images
-        self.log_images(generated_images, self.current_epoch)
-        
-        # Calculate and log Inception Score
-        inception_score, inception_std = self.calculate_inception_score(generated_images)
-        wandb.log({'inception_score': inception_score, 'inception_score_std': inception_std})
+        if self.current_epoch % 10 == 0:
+            # Generate noise
+            noise = torch.randn((32, 3, 32, 32), device=self.device)
+            generated_images = self.denoise_sample(noise, self.t_range)
+            
+            # Log generated images
+            self.log_images(generated_images, self.current_epoch)
+            
+            # Calculate and log Inception Score
+            inception_score, inception_std = self.calculate_inception_score(generated_images)
+            wandb.log({'inception_score': inception_score, 'inception_score_std': inception_std})
 
 
     def calculate_inception_score(self, images, splits=10):

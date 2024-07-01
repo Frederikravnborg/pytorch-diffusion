@@ -1,1 +1,1 @@
-{"_timestamp": 1719834016.8627992, "_runtime": 71.721036195755, "_step": 73, "inception_score": 1.0858374835132234, "inception_score_std": 0.013026577973352192, "train_loss": 0.9565205574035645, "epoch": 9, "trainer/global_step": 19, "val_loss": 0.9546266198158264}
+{"_timestamp": 1719834016.8627992, "_runtime": 71.721036195755, "_step": 73, "inception_score": 1.0858374835132234, "inception_score_std": 0.013026577973352192, "train_loss": 0.9565205574035645, "epoch": 9, "trainer/global_step": 19, "val_loss": 0.9546266198158264, "_wandb": {"runtime": 75}}
