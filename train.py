@@ -14,57 +14,43 @@ import torch.nn.functional as F
 import numpy as np
 
 
-# Training hyperparameters
-mode = 1   # 0 for local, 1 for HPC
+def main(diffusion_steps):
+    print(f"#### Training with {diffusion_steps} diffusion steps ####")
 
-if mode == 1: # HPC
-    diffusion_steps = 100
-    dataset_choice = "CIFAR"
-    max_epoch = 1000
-    batch_size = 128
-    train_fraction = 1.
-    val_fraction = 1.
-    continue_training = False
-    ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
-    wandb_name = f'{diffusion_steps}_steps'  
+    # Training hyperparameters
+    mode = 1   # 0 for local, 1 for HPC
 
-if mode == 0: # Local
-    diffusion_steps = 4
-    dataset_choice = "CIFAR"
-    max_epoch = 100
-    batch_size = 128
-    train_fraction = 1
-    val_fraction = 1
-    continue_training = False
-    ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
-    wandb_name = f'local_{diffusion_steps}_steps'
+    if mode == 1: # HPC
+        diffusion_steps = diffusion_steps
+        dataset_choice = "CIFAR"
+        max_epoch = 300
+        batch_size = 128
+        train_fraction = 1.
+        val_fraction = 1.
+        continue_training = False
+        ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
+        wandb_name = f'{diffusion_steps}_steps'  
 
-
-
-# Set the device
-if torch.cuda.is_available():
-    device = 'cuda'
-elif torch.backends.mps.is_available():
-    device = 'mps'
-else:
-    device = 'cpu'
+    if mode == 0: # Local
+        diffusion_steps = diffusion_steps
+        dataset_choice = "CIFAR"
+        max_epoch = 1
+        batch_size = 4
+        train_fraction = 1
+        val_fraction = 1
+        continue_training = False
+        ckpt_path = '/Users/fredmac/Documents/DTU-FredMac/pytorch-diffusion/checkpoints/06.30-22.28.05/10_steps-epoch=00-loss=0.00.ckpt'
+        wandb_name = f'local_{diffusion_steps}_steps'
 
 
-def main():
+    # Set the device
+    if torch.cuda.is_available():
+        device = 'cuda'
+    elif torch.backends.mps.is_available():
+        device = 'mps'
+    else:
+        device = 'cpu'
 
-    # # Loading parameters
-    # load_model = False
-    # load_version_num = 1
-
-    # # Code for optionally loading model
-    # pass_version = None
-    # last_checkpoint = None
-
-    # if load_model:
-    #     pass_version = load_version_num
-    #     last_checkpoint = glob.glob(
-    #         f"./lightning_logs/{dataset_choice}/version_{load_version_num}/checkpoints/*.ckpt"
-    #     )[-1]
 
     # Create datasets and data loaders
     train_dataset = DiffSet(True, dataset_choice)
@@ -106,6 +92,9 @@ def main():
     # Train model
     trainer.fit(model, train_loader, val_loader,
                 ckpt_path=ckpt_path if continue_training else None)
+    
+    wandb.finish()
 
 if __name__ == '__main__':
-    main()
+    for steps in [10, 50, 300, 500, 700, 1500, 2000]:
+        main(steps)

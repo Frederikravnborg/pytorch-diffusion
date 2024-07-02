@@ -1,0 +1,143 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.6
+    cli_version: 0.17.3
+    framework: lightning
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1719912132
+    t:
+      1:
+      - 1
+      - 9
+      - 41
+      - 55
+      - 103
+      2:
+      - 1
+      - 9
+      - 41
+      - 55
+      - 103
+      3:
+      - 7
+      - 13
+      - 23
+      - 66
+      4: 3.9.6
+      5: 0.17.3
+      8:
+      - 4
+      - 5
+      13: darwin-arm64
+    m:
+    - 1: trainer/global_step
+      6:
+      - 3
+    - 1: generated/_image_0._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_0.captions
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_16.captions
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31._type
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.width
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.height
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.format
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.count
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.filenames
+      5: 1
+      6:
+      - 1
+    - 1: generated/_image_31.captions
+      5: 1
+      6:
+      - 1
+    - 1: inception_score
+      5: 1
+      6:
+      - 1
+    - 1: inception_score_std
+      5: 1
+      6:
+      - 1
+    - 1: train_loss
+      5: 1
+      6:
+      - 1
+    - 1: epoch
+      5: 1
+      6:
+      - 1
+    - 1: val_loss
+      5: 1
+      6:
+      - 1
